@@ -1,12 +1,4 @@
 #Just collect some data on VPC, Subnet and AMI.
-data "aws_vpc" "default" {
-  default = true
-}
-
-data "aws_subnet_ids" "all" {
-  vpc_id = "${data.aws_vpc.default.id}"
-}
-
 data "aws_ami" "ubuntu_18_04" {
   most_recent = true
   filter {
