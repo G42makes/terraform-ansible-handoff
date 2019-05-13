@@ -3,6 +3,7 @@
 #setup local tools
 #  In prod I would have these as part of the AMI
 apt update
-apt install jq
+apt upgrade -y
+apt install -y jq
 
 #handoff to ansible-pull
