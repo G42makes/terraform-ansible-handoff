@@ -30,6 +30,7 @@ data "template_cloudinit_config" "config" {
   }
   #And this is the collection of vars that we want to pass to our
   #   ansible process to be used as needed from there.
+  # You may want to add the hostname here, but it's not automatic.
   part {
     content_type = "application/json"
     filename = "user-vars.json"
