@@ -4,7 +4,11 @@ resource "aws_instance" "handler" {
   ami = "${data.aws_ami.ubuntu_18_04.id}"
   instance_type = "t2.micro"
   iam_instance_profile = "${aws_iam_instance_profile.handler_profile.name}"
-  tags = "${merge(map("Name", "handler"), var.instance_tags)}"
+  tags = "${merge(
+    map(
+      "Name", "handler"
+    ),
+    var.instance_tags)}"
   key_name = "${aws_key_pair.tf-ansible.key_name}"
   user_data_base64 = "${data.template_cloudinit_config.config.rendered}"
 }

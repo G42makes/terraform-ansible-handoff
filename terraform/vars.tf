@@ -4,7 +4,7 @@
 #   True: use the ec2-handler.tf system and related config
 #   False: use the ec2-tags.tf system and related config
 variable "use_hander" {
-  default = true
+  default = false
 }
 
 #SSH key to use, this will default to your personal pub key
