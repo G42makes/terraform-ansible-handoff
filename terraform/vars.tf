@@ -3,8 +3,9 @@
 # for ansible.
 #   True: use the ec2-handler.tf system and related config
 #   False: use the ec2-tags.tf system and related config
-variable "use_hander" {
-  default = false
+variable "instance_type" {
+  default = "simple"
+  description = "Which single type of instance to create. ['simple', 'handler', 'tags']?"
 }
 
 #SSH key to use, this will default to your personal pub key

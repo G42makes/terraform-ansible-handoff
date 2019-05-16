@@ -6,8 +6,16 @@
 #   be interpreted, and errors are thrown since at least one does not exist.
 # This bypasses that problem, with some tricks.
 output "ip" {
-  value = "${coalesce(join("", aws_instance.handler.*.public_ip), join("", aws_instance.tags.*.public_ip))}"
+  value = "${coalesce(
+    join("", aws_instance.handler.*.public_ip),
+    join("", aws_instance.tags.*.public_ip),
+    join("", aws_instance.simple.*.public_ip),
+    )}"
 }
 output "dns" {
-  value = "${coalesce(join("", aws_instance.handler.*.public_dns), join("", aws_instance.tags.*.public_dns))}"
+  value = "${coalesce(
+    join("", aws_instance.handler.*.public_dns),
+    join("", aws_instance.tags.*.public_dns),
+    join("", aws_instance.simple.*.public_dns),
+    )}"
 }

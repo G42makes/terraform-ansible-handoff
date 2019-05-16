@@ -1,6 +1,7 @@
+## Using cloud-init handlers and providing a json file.
 #create the actual instance and userdata
 resource "aws_instance" "handler" {
-  count = "${var.use_hander}"
+  count = "${var.instance_type == "handler" ? 1 : 0}"
   ami = "${data.aws_ami.ubuntu_18_04.id}"
   instance_type = "t2.micro"
   iam_instance_profile = "${aws_iam_instance_profile.handler_profile.name}"
@@ -55,17 +56,17 @@ data "aws_iam_policy_document" "handler_role" {
   }
 }
 resource "aws_iam_role" "handler_role" {
-  count = "${var.use_hander}"
+  count = "${var.instance_type == "handler" ? 1 : 0}"
   name = "handler_role"
   assume_role_policy = "${data.aws_iam_policy_document.handler_role.json}"
 }
 resource "aws_iam_instance_profile" "handler_profile" {
-  count = "${var.use_hander}"
+  count = "${var.instance_type == "handler" ? 1 : 0}"
   name = "handler_profile"
   role = "${aws_iam_role.handler_role.name}"
 }
 resource "aws_iam_policy_attachment" "handler_policy" {
-  count = "${var.use_hander}"
+  count = "${var.instance_type == "handler" ? 1 : 0}"
   name = "handler_policy"
   roles = ["${aws_iam_role.handler_role.name}"]
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM"

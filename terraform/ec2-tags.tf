@@ -1,6 +1,7 @@
+## Using ec2 host tags and the userdata script to extract values.
 #create the actual instance and userdata
 resource "aws_instance" "tags" {
-  count = "${1 - var.use_hander}"   #Invert the logic from the other ec2
+  count = "${var.instance_type == "tags" ? 1 : 0}"
   ami = "${data.aws_ami.ubuntu_18_04.id}"
   instance_type = "t2.micro"
   iam_instance_profile = "${aws_iam_instance_profile.tags_profile.name}"
@@ -26,17 +27,17 @@ data "aws_iam_policy_document" "tags_role" {
   }
 }
 resource "aws_iam_role" "tags_role" {
-  count = "${1 - var.use_hander}"
+  count = "${var.instance_type == "tags" ? 1 : 0}"
   name = "tags_role"
   assume_role_policy = "${data.aws_iam_policy_document.tags_role.json}"
 }
 resource "aws_iam_instance_profile" "tags_profile" {
-  count = "${1 - var.use_hander}"
+  count = "${var.instance_type == "tags" ? 1 : 0}"
   name = "tags_profile"
   role = "${aws_iam_role.tags_role.name}"
 }
 resource "aws_iam_policy_attachment" "tags_policy" {
-  count = "${1 - var.use_hander}"
+  count = "${var.instance_type == "tags" ? 1 : 0}"
   name = "tags_policy"
   roles = ["${aws_iam_role.tags_role.name}"]
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM"
@@ -56,14 +57,14 @@ data "aws_iam_policy_document" "tags_read_policy" {
   }
 }
 resource "aws_iam_policy" "tags_read_policy" {
-  count = "${1 - var.use_hander}"
+  count = "${var.instance_type == "tags" ? 1 : 0}"
   name = "tags_read_policy"
   description = "Allow the handoff system to read it's own tags"
 
   policy = "${data.aws_iam_policy_document.tags_read_policy.json}"
 }
 resource "aws_iam_policy_attachment" "tags_read_policy" {
-  count = "${1 - var.use_hander}"
+  count = "${var.instance_type == "tags" ? 1 : 0}"
   name = "tags_read_policy"
   roles = ["${aws_iam_role.tags_role.name}"]
   policy_arn = "${aws_iam_policy.tags_read_policy.arn}"
