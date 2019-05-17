@@ -71,3 +71,11 @@ resource "aws_iam_policy_attachment" "handler_policy" {
   roles = ["${aws_iam_role.handler_role.name}"]
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM"
 }
+
+#Codecommit policy attachment
+resource "aws_iam_policy_attachment" "hander_codecommit_policy" {
+  count = "${var.instance_type == "handler" ? 1 : 0}"
+  name = "codecommit_policy"
+  roles = ["${aws_iam_role.handler_role.name}"]
+  policy_arn = "${aws_iam_policy.codecommit_policy.arn}"
+}

@@ -69,3 +69,11 @@ resource "aws_iam_policy_attachment" "tags_read_policy" {
   roles = ["${aws_iam_role.tags_role.name}"]
   policy_arn = "${aws_iam_policy.tags_read_policy.arn}"
 }
+
+#Codecommit policy attachment
+resource "aws_iam_policy_attachment" "tags_codecommit_policy" {
+  count = "${var.instance_type == "tags" ? 1 : 0}"
+  name = "codecommit_policy"
+  roles = ["${aws_iam_role.tags_role.name}"]
+  policy_arn = "${aws_iam_policy.codecommit_policy.arn}"
+}

@@ -11,3 +11,7 @@ data "aws_ami" "ubuntu_18_04" {
   }
   owners = ["099720109477"] # Canonical
 }
+
+data "aws_iam_user" "codecommit_user" {
+  user_name = "${var.codecommit_user}"
+}

@@ -10,7 +10,22 @@ variable "instance_type" {
 
 #SSH key to use, this will default to your personal pub key
 variable "public_key_filename" {
-  default = "~/.ssh/id_rsa.pub"
+  default = "~/.ssh/id_rsa_aws.pub"
+}
+#We need the private key filename as well, for the code upload.
+variable "private_key_filename" {
+  default = "~/.ssh/id_rsa_aws"
+}
+
+#If we are using the aws git repos, we upload the above SSH key into this account.
+variable "codecommit_user" {
+  default = "jyoung"
+  description = "Leave blank to not upload any new keys"
+}
+
+#Set the name of the repo on codecommit to use.
+variable "codecommit_repo" {
+  default = "terraform-ansible-handoff"
 }
 
 #Tags to use for the instances and that will be passed to ansible
