@@ -1,3 +1,5 @@
+# This code is not yet complete, ready to use or documented.
+
 # Terraform to Ansible Handoff Example
 
 The goal of this code is to show a basic example of terraform handing off to ansible using the ansible-pull style and an AWS(or other) git repo.
