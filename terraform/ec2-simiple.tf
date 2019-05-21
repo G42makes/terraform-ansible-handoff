@@ -48,7 +48,7 @@ data "template_file" "vars" {
   #   userdata.sh script.
   # The nice thing about this layout is that it can handle any number of vars, we don't have
   #   to specify them in the vars list, it's just handled.
-  template = "#!/bin/sh\necho '$${vars}' > /run/cloud-init/user-vars.json"
+  template = "#!/bin/bash\necho '$${vars}' > /run/cloud-init/user-vars.json"
   vars = {
     vars = "${jsonencode(local.simple_tags)}"
   }

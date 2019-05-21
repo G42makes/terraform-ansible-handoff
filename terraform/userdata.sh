@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 USER_VARS="/run/cloud-init/user-vars.json"
 
@@ -29,18 +29,27 @@ create_user_vars_tags () {
 
 #Function to setup and run the ansible-pull command we are using
 ansible_pull () {
-  #Info on git pull via AWS - tested with my current cloudwatch policy and it works
-  # see bottom of page
-  #   https://blog.0x427567.com/2016/08/13/How-to-clone-AWS-CodeCommit-repository-from-EC2-instance/
+  REPO=`jq -r .Repo $USER_VARS`
+  echo $REPO
+  if [[ $REPO =~ "amazonaws" ]]
+  then
+    echo "AWS Repo"
+    #Info on git pull via AWS - tested with my current cloudwatch policy and it works
+    # see bottom of page
+    #   https://blog.0x427567.com/2016/08/13/How-to-clone-AWS-CodeCommit-repository-from-EC2-instance/
 
-  # aws --region=us-east-1 codecommit list-repositories
-  # aws --region=us-east-1 codecommit get-repository --repository-name=terraform-ansible-handoff
-  # git config --global credential.helper '!aws codecommit credential-helper $@'
-  # git config --global credential.UseHttpPath true
-  # git clone https://git-codecommit.us-east-1.amazonaws.com/v1/repos/terraform-ansible-handoff
+    # aws --region=us-east-1 codecommit list-repositories
+    # aws --region=us-east-1 codecommit get-repository --repository-name=terraform-ansible-handoff
+    # git config --global credential.helper '!aws codecommit credential-helper $@'
+    # git config --global credential.UseHttpPath true
+    # git clone https://git-codecommit.us-east-1.amazonaws.com/v1/repos/terraform-ansible-handoff
+    git config --global credential.helper '!aws codecommit credential-helper $@'
+    git config --global credential.UseHttpPath true
+  fi
 
-  #https://docs.ansible.com/ansible/latest/cli/ansible-pull.html
-  #ansible-pull -e @$USER_VARS
+  #We pull the repo and execute it, including our vars file here.
+  # https://docs.ansible.com/ansible/latest/cli/ansible-pull.html
+  ansible-pull -U $REPO -e @$USER_VARS -i localhost,
 }
 
 #Run our script
