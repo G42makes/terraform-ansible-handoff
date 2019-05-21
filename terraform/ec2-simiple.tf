@@ -1,4 +1,27 @@
 ## Injecting the values file creation into the userdata via a template
+#Setup some vars we need.
+locals {
+  #This one get's a little ugly, so here is some info:
+  # - simple_tags: this is used later in the instance, we could set the hostname here, if we only want one box.
+  #   - We prepend "simple" to avoid name collisions.
+  # - merge: used to merge the two maps, the one with the tags from the vars, and the one we are about to create.
+  # - var.instance tags: just the existing map of vars, allowing us to add/remove as needed.
+  # - map: create a new map from scratch, merged into the above for output.
+  #   - "Repo": just the name of the entry in this map, will be used as a tag name in the instance.
+  #   - coalesce: returns the first non empty item from the list
+  #   - join: returns blank if we didn't create the repo at all, using the "*" handles count = 0 instances.
+  #   - we only put in the repo_address if it is not type AWS, otherwise we use the above.
+  simple_tags = "${merge(
+    var.instance_tags,
+    map(
+      "Repo", "${coalesce(
+        join("", aws_codecommit_repository.terraform_ansible_handoff.*.clone_url_http),
+        var.repo_type == "AWS" ? "" : var.repo_address,
+      )}"
+    )
+  )}"
+}
+
 #create the actual instance and userdata
 resource "aws_instance" "simple" {
   count = "${var.instance_type == "simple" ? 1 : 0}"
@@ -9,7 +32,7 @@ resource "aws_instance" "simple" {
     map(
       "Name", "simple"
     ),
-    var.instance_tags)}"
+    local.simple_tags)}"
   key_name = "${aws_key_pair.tf-ansible.key_name}"
   #Here we prepend our template to the re-usable userdata.sh
   user_data = "${join("\n", list("${data.template_file.vars.rendered}", file("userdata.sh")))}"
@@ -27,7 +50,7 @@ data "template_file" "vars" {
   #   to specify them in the vars list, it's just handled.
   template = "#!/bin/sh\necho '$${vars}' > /run/cloud-init/user-vars.json"
   vars = {
-    vars = "${jsonencode(var.instance_tags)}"
+    vars = "${jsonencode(local.simple_tags)}"
   }
 }
 

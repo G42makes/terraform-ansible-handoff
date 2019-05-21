@@ -8,6 +8,17 @@ variable "instance_type" {
   description = "Which single type of instance to create. ['simple', 'handler', 'tags']?"
 }
 
+#Define the repo we want to use for anisble pull:
+# Setting to "AWS" will create and use a codecommit repo.
+# Setting to "Other" will use the repo address below
+variable "repo_type" {
+  default = "AWS"
+  description = "Repo Source for Ansible Pull"
+}
+variable "repo_address" {
+  default = "https://github.com/G42makes/terraform-ansible-handoff.git"
+}
+
 #SSH key to use, this will default to your personal pub key
 variable "public_key_filename" {
   default = "~/.ssh/id_rsa_aws.pub"

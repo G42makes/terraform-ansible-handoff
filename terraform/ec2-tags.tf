@@ -1,4 +1,18 @@
 ## Using ec2 host tags and the userdata script to extract values.
+#Setup some vars we need.
+locals {
+  #see ec2-simple.tf for an explanation of this construct.
+  tags_tags = "${merge(
+    var.instance_tags,
+    map(
+      "Repo", "${coalesce(
+        join("", aws_codecommit_repository.terraform_ansible_handoff.*.clone_url_http),
+        var.repo_type == "AWS" ? "" : var.repo_address,
+      )}"
+    )
+  )}"
+}
+
 #create the actual instance and userdata
 resource "aws_instance" "tags" {
   count = "${var.instance_type == "tags" ? 1 : 0}"
@@ -9,7 +23,7 @@ resource "aws_instance" "tags" {
     map(
       "Name", "tags"
     ),
-    var.instance_tags)}"
+    local.tags_tags)}"
   key_name = "${aws_key_pair.tf-ansible.key_name}"
   user_data = "${file("userdata.sh")}"
 }

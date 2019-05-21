@@ -1,4 +1,18 @@
 ## Using cloud-init handlers and providing a json file.
+#Setup some vars we need.
+locals {
+  #see ec2-simple.tf for an explanation of this construct.
+  handler_tags = "${merge(
+    var.instance_tags,
+    map(
+      "Repo", "${coalesce(
+        join("", aws_codecommit_repository.terraform_ansible_handoff.*.clone_url_http),
+        var.repo_type == "AWS" ? "" : var.repo_address,
+      )}"
+    )
+  )}"
+}
+
 #create the actual instance and userdata
 resource "aws_instance" "handler" {
   count = "${var.instance_type == "handler" ? 1 : 0}"
@@ -9,7 +23,7 @@ resource "aws_instance" "handler" {
     map(
       "Name", "handler"
     ),
-    var.instance_tags)}"
+    local.handler_tags)}"
   key_name = "${aws_key_pair.tf-ansible.key_name}"
   user_data_base64 = "${data.template_cloudinit_config.config.rendered}"
 }
@@ -39,7 +53,7 @@ data "template_cloudinit_config" "config" {
   part {
     content_type = "application/json"
     filename = "user-vars.json"
-    content = "${jsonencode(var.instance_tags)}"
+    content = "${jsonencode(local.handler_tags)}"
   }
 }
 

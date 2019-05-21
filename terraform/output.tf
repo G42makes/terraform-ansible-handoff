@@ -19,3 +19,12 @@ output "dns" {
     join("", aws_instance.simple.*.public_dns),
     )}"
 }
+
+/*
+output "test" {
+  value = "${coalesce(
+    join("", aws_codecommit_repository.terraform_ansible_handoff.*.clone_url_http),
+    var.repo_type == "AWS" ? "" : var.repo_address,
+    )}"
+}
+*/
