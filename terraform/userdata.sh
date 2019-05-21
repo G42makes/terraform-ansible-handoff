@@ -34,6 +34,10 @@ ansible_pull () {
   if [[ $REPO =~ "amazonaws" ]]
   then
     echo "AWS Repo"
+
+    #We need this to setup git properly below.
+    export HOME="/root"
+
     #Info on git pull via AWS - tested with my current cloudwatch policy and it works
     # see bottom of page
     #   https://blog.0x427567.com/2016/08/13/How-to-clone-AWS-CodeCommit-repository-from-EC2-instance/
